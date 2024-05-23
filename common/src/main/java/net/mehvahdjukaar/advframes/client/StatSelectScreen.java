@@ -427,7 +427,7 @@ public class StatSelectScreen extends Screen implements StatsUpdateListener {
         private class ItemRow extends ObjectSelectionList.Entry<ItemStatisticsList.ItemRow> {
             private final Item item;
 
-            private Stat<Item> hovered = null;
+            private Stat<?> hovered = null;
 
             ItemRow(Item item) {
                 this.item = item;
@@ -442,9 +442,10 @@ public class StatSelectScreen extends Screen implements StatsUpdateListener {
                                int mouseX, int mouseY, boolean isMouseOver, float partialTicks) {
                 blitSlot(guiGraphics, left + 40, top, this.item);
                 hovered = null;
+
                 int p;
                 for (p = 0; p < itemStatsList.blockColumns.size(); ++p) {
-                    Stat stat;
+                    Stat<?> stat;
                     if (this.item instanceof BlockItem bi) {
                         stat = (itemStatsList.blockColumns.get(p)).get(bi.getBlock());
                     } else {
@@ -463,7 +464,7 @@ public class StatSelectScreen extends Screen implements StatsUpdateListener {
 
             }
 
-            protected void renderStat(GuiGraphics guiGraphics, @Nullable Stat<Item> stat, int x, int y,
+            protected void renderStat(GuiGraphics guiGraphics, @Nullable Stat<?> stat, int x, int y,
                                       boolean odd, boolean isMouseOver, int mouseX) {
                 String string = stat == null ? "-" : stat.format(stats.getValue(stat));
                 guiGraphics.drawString(font, string, x - font.width(string), y + 5, odd ? 16777215 : 9474192);
@@ -479,7 +480,12 @@ public class StatSelectScreen extends Screen implements StatsUpdateListener {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (hovered != null) {
-                    selectStat(hovered.getType(), item);
+                    StatType<?> type = hovered.getType();
+                    if (type.getRegistry() == BuiltInRegistries.BLOCK) {
+                        selectStat((StatType<Block>) type, ((BlockItem) item).getBlock());
+                    } else {
+                        selectStat((StatType<Item>) type, item);
+                    }
                 }
                 return false;
             }

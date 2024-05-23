@@ -22,6 +22,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -122,9 +123,9 @@ public class StatFrameBlock extends BaseFrameBlock {
         Object value = stat.getValue();
         MutableComponent text;
         ResourceLocation statId = BuiltInRegistries.STAT_TYPE.getKey(type);
-        if (value instanceof Item i) {
+        if (value instanceof ItemLike i) {
             text = Component.translatable(
-                    "stat.advancementframes." + statId.getPath(), i.getDescription().getString());
+                    "stat.advancementframes." + statId.getPath(), i.asItem().getDescription().getString());
 
         } else if (value instanceof EntityType<?> e) {
             text = Component.translatable(
